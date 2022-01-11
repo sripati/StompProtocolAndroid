@@ -59,8 +59,10 @@ public class StompMessage {
     public String compile(boolean legacyWhitespace) {
         StringBuilder builder = new StringBuilder();
         builder.append(mStompCommand).append('\n');
-        for (StompHeader header : mStompHeaders) {
-            builder.append(header.getKey()).append(':').append(header.getValue()).append('\n');
+        if(null != mStompHeaders) {
+            for (StompHeader header : mStompHeaders) {
+                builder.append(header.getKey()).append(':').append(header.getValue()).append('\n');
+            }
         }
         builder.append('\n');
         if (mPayload != null) {
@@ -85,8 +87,11 @@ public class StompMessage {
             matcher.find();
             headers.add(new StompHeader(matcher.group(1), matcher.group(2)));
         }
-
-        reader.skip("\n\n");
+        //If reader hasNext, then skip
+        if(reader.hasNext()) {
+            //reader.skip("\n\n");
+            reader.skip("\\s");
+        }
 
         reader.useDelimiter(TERMINATE_MESSAGE_SYMBOL);
         String payload = reader.hasNext() ? reader.next() : null;
